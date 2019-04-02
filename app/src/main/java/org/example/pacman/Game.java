@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,8 +28,14 @@ public class Game {
     private Bitmap enemyBitmap;
 
     private TextView pointsView; //textview reference to points
+    private TextView timeView;
 
     private int pacx, pacy;
+    private int up = 0;
+    private int left = 1;
+    private int down = 2;
+    private int right = 3;
+    private int curDir;
 
     //the list of goldcoins - initially empty
     private ArrayList<GoldCoin> coins = new ArrayList<>();
@@ -39,16 +46,21 @@ public class Game {
 
     private Random random = new Random();
 
-    private int amountCoins = 10;
+    private int amountCoins;
     private boolean coinsInit = false;
 
     private boolean enemiesInit = false;
 
-    private boolean gameOver = false;
+    private int time;
 
-    public Game(Context context, TextView view) {
+    private boolean running = false;
+    private boolean isPaused = false;
+    private boolean gameOver;
+
+    public Game(Context context, TextView view, TextView timeView) {
         this.context = context;
         this.pointsView = view;
+        this.timeView = timeView;
         pacBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.pacman);
         coinBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.coin);
         enemyBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ghost);
@@ -65,12 +77,17 @@ public class Game {
         pacy = 400; //just some starting coordinates
         //reset the points
         points = 0;
+        time = 0;
 
         coinsInit = false;
+        amountCoins = 10;
         enemiesInit = false;
 
+        running = false;
+        isPaused = false;
         gameOver = false;
-        pointsView.setText(context.getResources().getString(R.string.points)+" "+points);
+        pointsView.setText(context.getResources().getString(R.string.points)+" "+ points);
+        timeView.setText(context.getResources().getString(R.string.time) + " " + time);
 
         for (GoldCoin coin : coins) {
             coin.SetIsTaken(true);
@@ -80,8 +97,6 @@ public class Game {
             enemy.SetIsAlive(false);
         }
 
-
-
         gameView.invalidate(); //redraw screen
     }
 
@@ -89,8 +104,8 @@ public class Game {
         for (int i = 0; i < amountCoins; i++)
         {
             coins.add(new GoldCoin(
-                    random.nextInt(gameView.w - coinBitmap.getWidth()),
-                    random.nextInt(gameView.h - coinBitmap.getHeight())));
+                random.nextInt(gameView.w - coinBitmap.getWidth()),
+                random.nextInt(gameView.h - coinBitmap.getHeight())));
         }
     }
 
@@ -98,8 +113,8 @@ public class Game {
         for (int i = 0; i < 2; i++)
         {
             enemies.add(new Enemy(
-                    random.nextInt(gameView.w - enemyBitmap.getWidth()),
-                    random.nextInt(gameView.h - enemyBitmap.getHeight())));
+                random.nextInt(gameView.w - enemyBitmap.getWidth()),
+                random.nextInt(gameView.h - enemyBitmap.getHeight())));
         }
     }
 
@@ -108,89 +123,87 @@ public class Game {
         this.w = w;
     }
 
-    public void movePacmanRight(int pixels) {
-        //still within our boundaries?
-        if (pacx+pixels+pacBitmap.getWidth()<w) {
-            pacx = pacx + pixels;
-            doCollisionCheck();
-            gameView.invalidate();
-        }
+    public void movePacmanRight()
+    {
+        curDir = right;
     }
-
-    public void movePacmanUp(int pixels) {
-        //still within our boundaries?
-        if (pacy-pixels>0) {
-            pacy = pacy - pixels;
-            doCollisionCheck();
-            gameView.invalidate();
-        }
+    public void movePacmanLeft()
+    {
+        curDir = left;
     }
-
-    public void movePacmanLeft(int pixels) {
-        //still within our boundaries?
-        if (pacx-pixels>0) {
-            pacx = pacx - pixels;
-            doCollisionCheck();
-            gameView.invalidate();
-        }
+    public void movePacmanUp()
+    {
+        curDir = up;
     }
+    public void movePacmanDown() {curDir = down;}
 
-    public void movePacmanDown(int pixels) {
-        //still within our boundaries?
-        if (pacy+pixels+pacBitmap.getHeight()<h) {
-            pacy = pacy + pixels;
-            doCollisionCheck();
-            gameView.invalidate();
-        }
-    }
-
-    //TODO check if the pacman touches a gold coin
-    //and if yes, then update the neccesseary data
-    //for the gold coins and the points
-    //so you need to go through the arraylist of goldcoins and
-    //check each of them for a collision with the pacman
     public void doCollisionCheck() {
         for (GoldCoin coin : coins) {
-            int lx = coin.getCoinx()-pacx;
-            int ly = coin.getCoiny()-pacy;
-            double l = Math.sqrt((lx*lx)+(ly*ly));
-            int r1 = pacBitmap.getHeight()+pacBitmap.getWidth()-180;
-            int r2 = coinBitmap.getHeight()+coinBitmap.getWidth()-180;
-            if (l <= r1+r2 && !coin.isTaken() )
+            int lx = coin.getCoinX() - pacx;
+            int ly = coin.getCoinY() - pacy;
+            double l = Math.sqrt((lx * lx) + (ly * ly));
+            int r1 = pacBitmap.getHeight() + pacBitmap.getWidth() - 180;
+            int r2 = coinBitmap.getHeight() + coinBitmap.getWidth() - 180;
+            if (l <= r1 + r2 && !coin.isTaken() )
             {
                 coin.SetIsTaken(true);
+                amountCoins -= 1;
                 points += coin.getValue();
                 pointsView.setText(context.getText(R.string.points) +" "+ points);
-                if (points == 100)
-                {
-                    gameOver = true;
-                    GameOver(true);
-                }
             }
+        }
+
+        if (amountCoins == 5) {
+            amountCoins += 1;
+            coins.add(new GoldCoin(
+                    random.nextInt(gameView.w - coinBitmap.getWidth()),
+                    random.nextInt(gameView.h - coinBitmap.getHeight())));
         }
 
         for (Enemy enemy : enemies)
         {
-            int lx = enemy.getEnemyX()-pacx;
-            int ly = enemy.getEnemyY()-pacy;
-            double l = Math.sqrt((lx*lx)+(ly*ly));
-            int r1 = pacBitmap.getHeight()+pacBitmap.getWidth()-220;
-            int r2 = enemyBitmap.getHeight()+enemyBitmap.getWidth()-220;
-
-            if (l <= r1+r2 && enemy.isAlive()) {
+            int lx = enemy.getEnX() - pacx;
+            int ly = enemy.getEnY() - pacy;
+            double l = Math.sqrt((lx * lx) + (ly * ly));
+            int r1 = pacBitmap.getHeight() + pacBitmap.getWidth() - 220;
+            int r2 = enemyBitmap.getHeight() + enemyBitmap.getWidth() - 220;
+            if (l <= r1 + r2 && enemy.isAlive()) {
                 gameOver = true;
                 GameOver(false);
             }
+        }
+
+        if (points == 100) {
+            points = 25 + points;
+            enemies.add(new Enemy(
+                    random.nextInt(gameView.w - enemyBitmap.getWidth()),
+                    random.nextInt(gameView.h - enemyBitmap.getHeight())));
+        } else if (points == 225) {
+            points = 25 + points;
+            enemies.add(new Enemy(
+                    random.nextInt(gameView.w - enemyBitmap.getWidth()),
+                    random.nextInt(gameView.h - enemyBitmap.getHeight())));
+        } else if (points == 350) {
+            points = 25 + points;
+            enemies.add(new Enemy(
+                    random.nextInt(gameView.w - enemyBitmap.getWidth()),
+                    random.nextInt(gameView.h - enemyBitmap.getHeight())));
+        } else if (points == 475) {
+            points = 25 + points;
+            enemies.add(new Enemy(
+                    random.nextInt(gameView.w - enemyBitmap.getWidth()),
+                    random.nextInt(gameView.h - enemyBitmap.getHeight())));
+        } else if (points == 600) {
+            points = 25 + points;
+            enemies.add(new Enemy(
+                    random.nextInt(gameView.w - enemyBitmap.getWidth()),
+                    random.nextInt(gameView.h - enemyBitmap.getHeight())));
         }
     }
 
     public void GameOver(boolean victory) {
         Toast toast;
-        if (victory) {
-            toast = Toast.makeText(context, "You win!" + " Points: " + points, Toast.LENGTH_LONG);
-            toast.show();
-        }
-        else {
+        if (gameOver) {
             toast = Toast.makeText(context, "Game over!" +  " Points: " + points, Toast.LENGTH_LONG);
             toast.show();
         }
@@ -199,9 +212,12 @@ public class Game {
     public int getPacx() {
         return pacx;
     }
-    public int getPacy() {
+    public int setPacx(int value){return pacx = value;}
+    public int getPacy()
+    {
         return pacy;
     }
+    public int setPacy(int value){return pacy = value;}
 
     public ArrayList<GoldCoin> getCoins() {
         return coins;
@@ -234,7 +250,16 @@ public class Game {
         return enemiesInit = value;
     }
 
+    public int getCurDir(){return curDir;}
+    public int getTime(){return time;}
+    public int setTime(int value){return time = value;}
+
+    public boolean isRunning(){return running;}
+    public boolean setRunning(boolean value) {return running = value;}
+    public boolean getIsPaused(){return isPaused;}
+    public boolean setIsPaused(boolean value) {return isPaused = value;}
     public boolean getGameOver() {
         return gameOver;
     }
+    public boolean setGameOver(boolean value) {return gameOver = value;}
 }

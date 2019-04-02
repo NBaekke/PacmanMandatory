@@ -11,26 +11,23 @@ public class Enemy {
         this.enY = enY;
     }
 
-    public int getEnemyX() {
+    public int getEnX() {
         return enX;
     }
-
-    public int getEnemyY(){
+    public int getEnY(){
         return enY;
     }
 
-    public int setEnemyX(int value){
+    public int setEnX(int value){
         return enX = value;
     }
-
-    public int setEnemyY(int value){
+    public int setEnY(int value){
         return enY = value;
     }
 
     public boolean isAlive(){
         return isAlive;
     }
-
     public boolean SetIsAlive(boolean value){
         return isAlive = value;
     }
@@ -38,7 +35,6 @@ public class Enemy {
     public int getDir(){
         return dir;
     }
-
     public int setDir(int value){
         return dir = value;
     }

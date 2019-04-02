@@ -66,14 +66,13 @@ public class GameView extends View {
 
 		//draw the pacman
 		canvas.drawBitmap(game.getPacBitmap(), game.getPacx(),game.getPacy(), paint);
-		//TODO loop through the list of goldcoins and draw them.
 
 
         for (GoldCoin coin : game.getCoins())
         {
             if (!coin.isTaken())
             {
-                canvas.drawBitmap(game.getCoinBitmap(), coin.getCoinx(), coin.getCoiny(), paint);
+                canvas.drawBitmap(game.getCoinBitmap(), coin.getCoinX(), coin.getCoinY(), paint);
             }
         }
 
@@ -81,7 +80,7 @@ public class GameView extends View {
         {
             if (enemy.isAlive())
             {
-                canvas.drawBitmap(game.getEnemyBitmap(), enemy.getEnemyX(), enemy.getEnemyY(), paint);
+                canvas.drawBitmap(game.getEnemyBitmap(), enemy.getEnX(), enemy.getEnY(), paint);
             }
         }
 

@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Pacman</string>
     <string name="points">Points:</string>
+    <string name="time">Time:</string>
+    <string name="pause_button">Pause</string>
+    <string name="continue_button">Continue</string>
+    <string name="start_button">Start</string>
     <string name="move_right">Move Right</string>
     <string name="move_up">Move Up</string>
     <string name="move_left">Move Left</string>

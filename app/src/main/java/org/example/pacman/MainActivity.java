@@ -1,6 +1,5 @@
 package org.example.pacman;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
@@ -12,6 +11,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -19,6 +21,19 @@ public class MainActivity extends AppCompatActivity {
     GameView gameView;
     //reference to the game class.
     Game game;
+
+    int speed = 5;
+    int enemySpeed = 7;
+
+    private Timer pacTimer;
+    private Timer enemyTimer;
+    private Timer realTimer;
+
+    private int delay = 15;
+    private TextView timeView;
+
+    private Random random = new Random();
+
     private SharedPreferences mPreferences;
     private SharedPreferences.Editor SEditor;
 
@@ -31,29 +46,87 @@ public class MainActivity extends AppCompatActivity {
 
         gameView =  findViewById(R.id.gameView);
         TextView textView = findViewById(R.id.points);
+        timeView = findViewById(R.id.time);
 
 
-        game = new Game(this,textView);
+        game = new Game(this,textView, timeView);
         game.setGameView(gameView);
         gameView.setGame(game);
 
+        pacTimer = new Timer();
+        enemyTimer = new Timer();
+        realTimer = new Timer();
+
         game.newGame();
+
+        pacTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Move();
+            }
+        }, 0, delay);
+
+        realTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                RealTime();
+            }
+        }, 0, 1000);
+
+        enemyTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                RandomDir();
+            }
+        }, 250, 500);
+
+        Button pauseBtn = findViewById(R.id.pauseButton);
+        pauseBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                game.setRunning(false);
+                game.setIsPaused(true);
+            }
+        });
+
+        Button contBtn = findViewById(R.id.continueButton);
+        contBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                if(game.getIsPaused())
+                {
+                    game.setRunning(true);
+                    game.setIsPaused(false);
+                }
+
+            }
+        });
 
         Button buttonRight = findViewById(R.id.moveRight);
         buttonRight.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                game.movePacmanRight(10);
+                if (!game.getIsPaused())
+                {
+                    game.movePacmanRight();
+                    game.setRunning(true);
+                }
             }
         });
+
 
         Button buttonUp = findViewById(R.id.moveUp);
         buttonUp.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                game.movePacmanUp(10);
+                if (!game.getIsPaused())
+                {
+                    game.movePacmanUp();
+                    game.setRunning(true);
+                }
+
             }
         });
 
@@ -62,7 +135,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                game.movePacmanLeft(10);
+                if (!game.getIsPaused())
+                {
+                    game.movePacmanLeft();
+                    game.setRunning(true);
+                }
             }
         });
 
@@ -71,7 +148,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                game.movePacmanDown(10);
+                if (!game.getIsPaused())
+                {
+                    game.movePacmanDown();
+                    game.setRunning(true);
+                }
             }
         });
 
@@ -80,6 +161,155 @@ public class MainActivity extends AppCompatActivity {
         //SEditor.putInt("highscore", points);
 
     }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        pacTimer.cancel();
+        realTimer.cancel();
+        enemyTimer.cancel();
+    }
+
+    private void Move()
+    {
+        this.runOnUiThread(MoveTicker);
+    }
+
+    private void RandomDir()
+    {
+        this.runOnUiThread(EnemyTicker);
+    }
+
+    private void RealTime()
+    {
+        this.runOnUiThread(TimeTicker);
+    }
+
+    private Runnable TimeTicker = new Runnable() {
+        @Override
+        public void run() {
+            if (game.isRunning()) {
+                game.setTime(game.getTime() + 1);
+                timeView.setText(getText(R.string.time) + " " + game.getTime() + " sec");
+            } else {
+                game.setRunning(false);
+                game.setIsPaused(true);
+            }
+        }
+    };
+
+    private Runnable EnemyTicker = new Runnable() {
+        @Override
+        public void run() {
+            if (game.isRunning()) {
+                for (Enemy enemy : game.getEnemies()) {
+                    enemy.setDir(random.nextInt(5));
+                }
+
+            }
+        }
+    };
+
+    private Runnable MoveTicker = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            for (Enemy enemy : game.getEnemies()) {
+                switch (enemy.getDir()) {
+                    case 0:
+                        if (game.isRunning()) {
+                            if (enemy.getEnY() + enemySpeed > 0) {
+                                enemy.setEnY(enemy.getEnY() - enemySpeed);
+                                game.doCollisionCheck();
+                                gameView.invalidate();
+
+                                // (random.nextBoolean() ? enemySpeed : - enemySpeed)
+                            }
+                        }
+                        break;
+                    case 1:
+                        if (game.isRunning()) {
+                            if (enemy.getEnX() + enemySpeed > 0) {
+                                enemy.setEnX(enemy.getEnX() - enemySpeed);
+                                game.doCollisionCheck();
+                                gameView.invalidate();
+                            }
+                        }
+                        break;
+                    case 2:
+                        if (game.isRunning()) {
+                            if (enemy.getEnY() - enemySpeed + game.getEnemyBitmap().getWidth() < gameView.w) {
+                                enemy.setEnY(enemy.getEnY() + enemySpeed);
+                                game.doCollisionCheck();
+                                gameView.invalidate();
+                            }
+                        }
+                        break;
+                    case 3:
+                        if (game.isRunning()) {
+                            if (enemy.getEnX() - enemySpeed + game.getEnemyBitmap().getWidth() < gameView.w) {
+                                enemy.setEnX(enemy.getEnX() + enemySpeed);
+                                game.doCollisionCheck();
+                                gameView.invalidate();
+                            }
+                        }
+                        break;
+                }
+            }
+                switch (game.getCurDir()) {
+                    case 0:
+                        if (game.getPacy() + speed > 0 && game.isRunning())
+                        {
+                            game.setPacy(game.getPacy() - speed);
+                            game.doCollisionCheck();
+                            gameView.invalidate();
+                        } else if (game.getPacy() + speed > 0 && game.isRunning()) {
+                            game.setPacy(game.getPacy() - speed);
+                            game.doCollisionCheck();
+                            gameView.invalidate();
+                        }
+                        break;
+                    case 1:
+                        if (game.getPacx() + speed > 0 && game.isRunning())
+                        {
+                            game.setPacx(game.getPacx() - speed);
+                            game.doCollisionCheck();
+                            gameView.invalidate();
+                        } else if (game.getPacx() + speed > 0 && game.isRunning()) {
+                            game.setPacx(game.getPacx() - speed);
+                            game.doCollisionCheck();
+                            gameView.invalidate();
+                        }
+                        break;
+                    case 2:
+                        if (game.getPacy() + speed + game.getPacBitmap().getHeight() < gameView.h && game.isRunning())
+                        {
+                            game.setPacy(game.getPacy() + speed);
+                            game.doCollisionCheck();
+                            gameView.invalidate();
+                        } else if (game.getPacy() + speed + game.getPacBitmap().getHeight() < gameView.h && game.isRunning()) {
+                            game.setPacy(game.getPacy() + speed);
+                            game.doCollisionCheck();
+                            gameView.invalidate();
+                        }
+                        break;
+                    case 3:
+                        if (game.getPacx() + speed + game.getPacBitmap().getWidth() < gameView.w && game.isRunning())
+                        {
+                            game.setPacx(game.getPacx() + speed);
+                            game.doCollisionCheck();
+                            gameView.invalidate();
+                        } else if (game.getPacx() + speed + game.getPacBitmap().getWidth() < gameView.w && game.isRunning()) {
+                            game.setPacx(game.getPacx() + speed);
+                            game.doCollisionCheck();
+                            gameView.invalidate();
+                        }
+                        break;
+                }
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
