@@ -147,7 +147,7 @@ public class Game {
             int ly = coin.getCoinY() - pacy;
             double l = Math.sqrt((lx * lx) + (ly * ly));
             int r1 = pacBitmap.getHeight() + pacBitmap.getWidth() - 180;
-            int r2 = coinBitmap.getHeight() + coinBitmap.getWidth() - 180;
+            int r2 = coinBitmap.getHeight() + coinBitmap.getWidth() - 150;
             if (l <= r1 + r2 && !coin.isTaken() )
             {
                 coin.SetIsTaken(true);
@@ -177,38 +177,37 @@ public class Game {
             }
         }
 
+        Enemy addNewEne = new Enemy(
+                random.nextInt(gameView.w - enemyBitmap.getWidth()),
+                random.nextInt(gameView.h - enemyBitmap.getHeight()));
+
         if (points == 100) {
             points = 25 + points;
-            enemies.add(new Enemy(
-                    random.nextInt(gameView.w - enemyBitmap.getWidth()),
-                    random.nextInt(gameView.h - enemyBitmap.getHeight())));
+            enemies.add(addNewEne);
+            pointsView.setText(context.getText(R.string.points) +" "+ points);
         } else if (points == 225) {
             points = 25 + points;
-            enemies.add(new Enemy(
-                    random.nextInt(gameView.w - enemyBitmap.getWidth()),
-                    random.nextInt(gameView.h - enemyBitmap.getHeight())));
+            enemies.add(addNewEne);
+            pointsView.setText(context.getText(R.string.points) +" "+ points);
         } else if (points == 350) {
             points = 25 + points;
-            enemies.add(new Enemy(
-                    random.nextInt(gameView.w - enemyBitmap.getWidth()),
-                    random.nextInt(gameView.h - enemyBitmap.getHeight())));
+            enemies.add(addNewEne);
+            pointsView.setText(context.getText(R.string.points) +" "+ points);
         } else if (points == 475) {
             points = 25 + points;
-            enemies.add(new Enemy(
-                    random.nextInt(gameView.w - enemyBitmap.getWidth()),
-                    random.nextInt(gameView.h - enemyBitmap.getHeight())));
+            enemies.add(addNewEne);
+            pointsView.setText(context.getText(R.string.points) +" "+ points);
         } else if (points == 600) {
             points = 25 + points;
-            enemies.add(new Enemy(
-                    random.nextInt(gameView.w - enemyBitmap.getWidth()),
-                    random.nextInt(gameView.h - enemyBitmap.getHeight())));
+            enemies.add(addNewEne);
+            pointsView.setText(context.getText(R.string.points) +" "+ points);
         }
     }
 
     public void GameOver(boolean gameOver) {
         Toast toast;
         if (gameOver) {
-            toast = Toast.makeText(context, "Game over!" +  " Points: " + points, Toast.LENGTH_LONG);
+            toast = Toast.makeText(context, "You survived for: " + time + " seconds. Points: " + points, Toast.LENGTH_LONG);
             toast.show();
         }
 

@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private Timer enemyTimer;
     private Timer realTimer;
 
-    private int delay = 15;
     private TextView timeView;
 
     private Random random = new Random();
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 Move();
             }
-        }, 0, delay);
+        }, 0, 15);
 
         realTimer.schedule(new TimerTask() {
             @Override

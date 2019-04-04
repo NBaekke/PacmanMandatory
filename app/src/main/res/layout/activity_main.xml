@@ -8,6 +8,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="vertical">
 
         <TextView
@@ -52,6 +56,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -96,14 +103,14 @@
                     android:id="@+id/moveLeft"
                     android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
+                    android:layout_gravity="start"
                     android:text="@string/move_left" />
 
                 <Button
                     android:id="@+id/moveRight"
                     android:layout_width="110dp"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
+                    android:layout_gravity="end"
                     android:text="@string/move_right" />
 
             </LinearLayout>
