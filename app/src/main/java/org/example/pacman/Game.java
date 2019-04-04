@@ -21,6 +21,7 @@ public class Game {
     //context is a reference to the activity
     private Context context;
     private int points; //how points do we have
+    private int highScore = 0;
 
     //bitmap of the pacman
     private Bitmap pacBitmap;
@@ -28,6 +29,7 @@ public class Game {
     private Bitmap enemyBitmap;
 
     private TextView pointsView; //textview reference to points
+    private TextView highScoreView;
     private TextView timeView;
 
     private int pacx, pacy;
@@ -57,9 +59,10 @@ public class Game {
     private boolean isPaused = false;
     private boolean gameOver;
 
-    public Game(Context context, TextView view, TextView timeView) {
+    public Game(Context context, TextView pointsView, TextView highScoreView, TextView timeView) {
         this.context = context;
-        this.pointsView = view;
+        this.pointsView = pointsView;
+        this.highScoreView = highScoreView;
         this.timeView = timeView;
         pacBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.pacman);
         coinBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.coin);
@@ -87,6 +90,7 @@ public class Game {
         isPaused = false;
         gameOver = false;
         pointsView.setText(context.getResources().getString(R.string.points)+" "+ points);
+        highScoreView.setText(context.getResources().getString(R.string.high_score)+" "+ highScore);
         timeView.setText(context.getResources().getString(R.string.time) + " " + time);
 
         for (GoldCoin coin : coins) {
@@ -201,11 +205,15 @@ public class Game {
         }
     }
 
-    public void GameOver(boolean victory) {
+    public void GameOver(boolean gameOver) {
         Toast toast;
         if (gameOver) {
             toast = Toast.makeText(context, "Game over!" +  " Points: " + points, Toast.LENGTH_LONG);
             toast.show();
+        }
+
+        if (points > highScore) {
+            setHighscore(points);
         }
     }
 
@@ -250,6 +258,16 @@ public class Game {
         return enemiesInit = value;
     }
 
+    public int getPoints() {
+        return points;
+    }
+
+    public int getHighscore() {
+        return highScore;
+    }
+
+    public int setHighscore(int value){return highScore = value;}
+
     public int getCurDir(){return curDir;}
     public int getTime(){return time;}
     public int setTime(int value){return time = value;}
@@ -261,5 +279,4 @@ public class Game {
     public boolean getGameOver() {
         return gameOver;
     }
-    public boolean setGameOver(boolean value) {return gameOver = value;}
 }

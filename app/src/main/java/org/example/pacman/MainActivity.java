@@ -1,10 +1,13 @@
 package org.example.pacman;
 
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,9 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Random random = new Random();
 
-    private SharedPreferences mPreferences;
-    private SharedPreferences.Editor SEditor;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,11 +45,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         gameView =  findViewById(R.id.gameView);
-        TextView textView = findViewById(R.id.points);
+        TextView pointsView = findViewById(R.id.points);
+        TextView highscoreView = findViewById(R.id.high_score);
         timeView = findViewById(R.id.time);
 
-
-        game = new Game(this,textView, timeView);
+        game = new Game(this, pointsView, highscoreView, timeView);
         game.setGameView(gameView);
         gameView.setGame(game);
 
@@ -58,6 +58,14 @@ public class MainActivity extends AppCompatActivity {
         realTimer = new Timer();
 
         game.newGame();
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        checkSaved();
+
+        editor.putInt("high_score", game.getHighscore());
+        editor.apply();
 
         pacTimer.schedule(new TimerTask() {
             @Override
@@ -155,11 +163,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
 
-        //mPreferences score = getSharedPreferences("org.example.pacman", Context.MODE_PRIVATE);
-        //SEditor = score.edit();
-        //SEditor.putInt("highscore", points);
-
+    private void checkSaved() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        int highScore = sharedPref.getInt("high_score", 0);
+        game.setHighscore(highScore);
     }
 
     @Override
@@ -224,8 +233,6 @@ public class MainActivity extends AppCompatActivity {
                                 enemy.setEnY(enemy.getEnY() - enemySpeed);
                                 game.doCollisionCheck();
                                 gameView.invalidate();
-
-                                // (random.nextBoolean() ? enemySpeed : - enemySpeed)
                             }
                         }
                         break;
@@ -260,48 +267,28 @@ public class MainActivity extends AppCompatActivity {
             }
                 switch (game.getCurDir()) {
                     case 0:
-                        if (game.getPacy() + speed > 0 && game.isRunning())
-                        {
-                            game.setPacy(game.getPacy() - speed);
-                            game.doCollisionCheck();
-                            gameView.invalidate();
-                        } else if (game.getPacy() + speed > 0 && game.isRunning()) {
+                        if (game.getPacy() + speed > 0 && game.isRunning()) {
                             game.setPacy(game.getPacy() - speed);
                             game.doCollisionCheck();
                             gameView.invalidate();
                         }
                         break;
                     case 1:
-                        if (game.getPacx() + speed > 0 && game.isRunning())
-                        {
-                            game.setPacx(game.getPacx() - speed);
-                            game.doCollisionCheck();
-                            gameView.invalidate();
-                        } else if (game.getPacx() + speed > 0 && game.isRunning()) {
+                        if (game.getPacx() + speed > 0 && game.isRunning()) {
                             game.setPacx(game.getPacx() - speed);
                             game.doCollisionCheck();
                             gameView.invalidate();
                         }
                         break;
                     case 2:
-                        if (game.getPacy() + speed + game.getPacBitmap().getHeight() < gameView.h && game.isRunning())
-                        {
-                            game.setPacy(game.getPacy() + speed);
-                            game.doCollisionCheck();
-                            gameView.invalidate();
-                        } else if (game.getPacy() + speed + game.getPacBitmap().getHeight() < gameView.h && game.isRunning()) {
+                        if (game.getPacy() + speed + game.getPacBitmap().getHeight() < gameView.h && game.isRunning()) {
                             game.setPacy(game.getPacy() + speed);
                             game.doCollisionCheck();
                             gameView.invalidate();
                         }
                         break;
                     case 3:
-                        if (game.getPacx() + speed + game.getPacBitmap().getWidth() < gameView.w && game.isRunning())
-                        {
-                            game.setPacx(game.getPacx() + speed);
-                            game.doCollisionCheck();
-                            gameView.invalidate();
-                        } else if (game.getPacx() + speed + game.getPacBitmap().getWidth() < gameView.w && game.isRunning()) {
+                        if (game.getPacx() + speed + game.getPacBitmap().getWidth() < gameView.w && game.isRunning()) {
                             game.setPacx(game.getPacx() + speed);
                             game.doCollisionCheck();
                             gameView.invalidate();
@@ -328,6 +315,10 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this,"settings clicked",Toast.LENGTH_LONG).show();
             return true;
         } else if (id == R.id.action_newGame) {
+
+            if(game.getPoints() > game.getHighscore()) {
+                game.setHighscore(game.getPoints());
+            }
             game.newGame();
             return true;
         }
