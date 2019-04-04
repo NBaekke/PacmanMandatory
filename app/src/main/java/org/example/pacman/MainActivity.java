@@ -97,8 +97,7 @@ public class MainActivity extends AppCompatActivity {
         contBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                if(game.getIsPaused())
-                {
+                if(game.getIsPaused()) {
                     game.setRunning(true);
                     game.setIsPaused(false);
                 }
@@ -111,8 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if (!game.getIsPaused())
-                {
+                if (!game.getIsPaused()) {
                     game.movePacmanRight();
                     game.setRunning(true);
                 }
@@ -125,8 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if (!game.getIsPaused())
-                {
+                if (!game.getIsPaused()) {
                     game.movePacmanUp();
                     game.setRunning(true);
                 }
@@ -139,8 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if (!game.getIsPaused())
-                {
+                if (!game.getIsPaused()) {
                     game.movePacmanLeft();
                     game.setRunning(true);
                 }
@@ -152,8 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if (!game.getIsPaused())
-                {
+                if (!game.getIsPaused()) {
                     game.movePacmanDown();
                     game.setRunning(true);
                 }
@@ -168,8 +163,7 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
     @Override
-    protected void onStop()
-    {
+    protected void onStop() {
         super.onStop();
         pacTimer.cancel();
         realTimer.cancel();
