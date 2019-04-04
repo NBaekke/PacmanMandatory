@@ -1,11 +1,8 @@
 package org.example.pacman;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.preference.PreferenceManager;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,9 +15,8 @@ import java.util.Random;
  */
 
 public class Game {
-    //context is a reference to the activity
     private Context context;
-    private int points; //how points do we have
+    private int points;
     private int highScore = 0;
 
     //bitmap of the pacman
@@ -28,7 +24,7 @@ public class Game {
     private Bitmap coinBitmap;
     private Bitmap enemyBitmap;
 
-    private TextView pointsView; //textview reference to points
+    private TextView pointsView;
     private TextView highScoreView;
     private TextView timeView;
 
@@ -39,17 +35,11 @@ public class Game {
     private int right = 3;
     private int curDir;
 
-    //the list of goldcoins - initially empty
     private ArrayList<GoldCoin> coins = new ArrayList<>();
     private ArrayList<Enemy> enemies = new ArrayList<>();
 
-    private GameView gameView; //a reference to the gameview
-    private int h,w; //height and width of screen
-
-    public void setSize(int h, int w) {
-        this.h = h;
-        this.w = w;
-    }
+    private GameView gameView;
+    private int h,w;
 
     private Random random = new Random();
 
@@ -79,7 +69,6 @@ public class Game {
         this.gameView = view;
     }
 
-    //TODO initialize goldcoins also here
     public void newGame() {
         pacx = 500;
         pacy = 400;
@@ -109,8 +98,7 @@ public class Game {
     }
 
     public void initCoins() {
-        for (int i = 0; i < amountCoins; i++)
-        {
+        for (int i = 0; i < amountCoins; i++) {
             coins.add(new GoldCoin(
                 random.nextInt(gameView.w - coinBitmap.getWidth()),
                 random.nextInt(gameView.h - coinBitmap.getHeight())));
@@ -118,12 +106,16 @@ public class Game {
     }
 
     public void initEnemies() {
-        for (int i = 0; i < 2; i++)
-        {
+        for (int i = 0; i < 2; i++) {
             enemies.add(new Enemy(
                 random.nextInt(gameView.w - enemyBitmap.getWidth()),
                 random.nextInt(gameView.h - enemyBitmap.getHeight())));
         }
+    }
+
+    public void setSize(int h, int w) {
+        this.h = h;
+        this.w = w;
     }
 
     public void movePacmanRight()
@@ -147,8 +139,7 @@ public class Game {
             double l = Math.sqrt((lx * lx) + (ly * ly));
             int r1 = pacBitmap.getHeight() + pacBitmap.getWidth() - 180;
             int r2 = coinBitmap.getHeight() + coinBitmap.getWidth() - 150;
-            if (l <= r1 + r2 && !coin.isTaken() )
-            {
+            if (l <= r1 + r2 && !coin.isTaken()) {
                 coin.SetIsTaken(true);
                 amountCoins -= 1;
                 points += coin.getValue();
@@ -163,10 +154,9 @@ public class Game {
                     random.nextInt(gameView.h - coinBitmap.getHeight())));
         }
 
-        for (Enemy enemy : enemies)
-        {
-            int lx = enemy.getEnX() - pacx;
-            int ly = enemy.getEnY() - pacy;
+        for (Enemy enemy : enemies) {
+            int lx = enemy.getEnx() - pacx;
+            int ly = enemy.getEny() - pacy;
             double l = Math.sqrt((lx * lx) + (ly * ly));
             int r1 = pacBitmap.getHeight() + pacBitmap.getWidth() - 220;
             int r2 = enemyBitmap.getHeight() + enemyBitmap.getWidth() - 220;

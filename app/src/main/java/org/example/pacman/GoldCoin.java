@@ -1,7 +1,6 @@
 package org.example.pacman;
 
 public class GoldCoin {
-
     private int coinx, coiny;
     private boolean isTaken = false;
     private final int value = 10;
@@ -16,7 +15,6 @@ public class GoldCoin {
     {
         return coinx;
     }
-
     public int getCoinY()
     {
         return coiny;
@@ -26,7 +24,6 @@ public class GoldCoin {
     {
         return isTaken;
     }
-
     public boolean SetIsTaken(boolean value)
     {
         return isTaken = value;

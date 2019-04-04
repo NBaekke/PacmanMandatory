@@ -1,28 +1,28 @@
 package org.example.pacman;
 
 public class Enemy {
-    private int enX, enY;
+    private int enx, eny;
     private boolean isAlive = true;
     private int dir;
 
-    public Enemy(int enX, int enY)
+    public Enemy(int enx, int eny)
     {
-        this.enX = enX;
-        this.enY = enY;
+        this.enx = enx;
+        this.eny = eny;
     }
 
-    public int getEnX() {
-        return enX;
+    public int getEnx() {
+        return enx;
     }
-    public int getEnY(){
-        return enY;
+    public int getEny(){
+        return eny;
     }
 
-    public int setEnX(int value){
-        return enX = value;
+    public int setEnx(int value){
+        return enx = value;
     }
-    public int setEnY(int value){
-        return enY = value;
+    public int setEny(int value){
+        return eny = value;
     }
 
     public boolean isAlive(){

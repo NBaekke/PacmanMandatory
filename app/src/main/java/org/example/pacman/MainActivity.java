@@ -7,7 +7,6 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,9 +19,7 @@ import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
-    //reference to the main view
     GameView gameView;
-    //reference to the game class.
     Game game;
 
     int speed = 5;
@@ -39,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //saying we want the game to run in one mode only
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
 
@@ -165,11 +161,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void checkSaved() {
+    /*private void checkSaved() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         int highScore = sharedPref.getInt("high_score", 0);
         game.setHighscore(highScore);
-    }
+    }*/
 
     @Override
     protected void onStop()
@@ -228,29 +224,29 @@ public class MainActivity extends AppCompatActivity {
             for (Enemy enemy : game.getEnemies()) {
                 switch (enemy.getDir()) {
                     case 0:
-                        if (enemy.getEnY() + enemySpeed > 1 && game.isRunning()) {
-                            enemy.setEnY(enemy.getEnY() - enemySpeed);
+                        if (enemy.getEny() + enemySpeed > 1 && game.isRunning()) {
+                            enemy.setEny(enemy.getEny() - enemySpeed);
                             game.doCollisionCheck();
                             gameView.invalidate();
                         }
                         break;
                     case 1:
-                        if (enemy.getEnX() + enemySpeed > 1 && game.isRunning()) {
-                            enemy.setEnX(enemy.getEnX() - enemySpeed);
+                        if (enemy.getEnx() + enemySpeed > 1 && game.isRunning()) {
+                            enemy.setEnx(enemy.getEnx() - enemySpeed);
                             game.doCollisionCheck();
                             gameView.invalidate();
                         }
                         break;
                     case 2:
-                        if (enemy.getEnY() + enemySpeed + game.getEnemyBitmap().getHeight() <= gameView.h  && game.isRunning()) {
-                            enemy.setEnY(enemy.getEnY() + enemySpeed);
+                        if (enemy.getEny() + enemySpeed + game.getEnemyBitmap().getHeight() <= gameView.h  && game.isRunning()) {
+                            enemy.setEny(enemy.getEny() + enemySpeed);
                             game.doCollisionCheck();
                             gameView.invalidate();
                         }
                         break;
                     case 3:
-                        if (enemy.getEnX() + enemySpeed + game.getEnemyBitmap().getWidth() <= gameView.w && game.isRunning()) {
-                            enemy.setEnX(enemy.getEnX() + enemySpeed);
+                        if (enemy.getEnx() + enemySpeed + game.getEnemyBitmap().getWidth() <= gameView.w && game.isRunning()) {
+                            enemy.setEnx(enemy.getEnx() + enemySpeed);
                             game.doCollisionCheck();
                             gameView.invalidate();
                         }
@@ -292,23 +288,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             Toast.makeText(this,"settings clicked",Toast.LENGTH_LONG).show();
             return true;
         } else if (id == R.id.action_newGame) {
-
-            if(game.getPoints() > game.getHighscore()) {
+            if (game.getPoints() > game.getHighscore()) {
                 game.setHighscore(game.getPoints());
             }
             game.newGame();

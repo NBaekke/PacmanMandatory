@@ -19,73 +19,55 @@ public class GameView extends View {
 		this.game = game;
 	}
 
-
-	/* The next 3 constructors are needed for the Android view system,
-	when we have a custom view.
-	 */
 	public GameView(Context context) {
 		super(context);
-
 	}
 
 	public GameView(Context context, AttributeSet attrs) {
-		super(context,attrs);
+	    super(context,attrs);
 	}
 
-
-	public GameView(Context context, AttributeSet attrs, int defStyleAttr)
-	{
+	public GameView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context,attrs,defStyleAttr);
 	}
 
-	//In the onDraw we put all our code that should be
-	//drawn whenever we update the screen.
 	@Override
 	protected void onDraw(Canvas canvas) {
 		//Here we get the height and weight
 		h = canvas.getHeight();
 		w = canvas.getWidth();
 
-        if (!game.CoinsInit())
-        {
+        if (!game.CoinsInit()) {
             game.initCoins();
             game.setCoinsInit(true);
         }
-        if (!game.EnemiesInit())
-        {
+
+        if (!game.EnemiesInit()) {
             game.initEnemies();
             game.setEnemiesInit(true);
         }
 
-		//update the size for the canvas to the game.
 		game.setSize(h,w);
 		Log.d("GAMEVIEW","h = "+h+", w = "+w);
-		//Making a new paint object
-		Paint paint = new Paint();
-		canvas.drawColor(Color.WHITE); //clear entire canvas to white color
 
-		//draw the pacman
+		Paint paint = new Paint();
+		canvas.drawColor(Color.WHITE);
+
 		canvas.drawBitmap(game.getPacBitmap(), game.getPacx(),game.getPacy(), paint);
 
-
-        for (GoldCoin coin : game.getCoins())
-        {
-            if (!coin.isTaken())
-            {
+        for (GoldCoin coin : game.getCoins()) {
+            if (!coin.isTaken()) {
                 canvas.drawBitmap(game.getCoinBitmap(), coin.getCoinX(), coin.getCoinY(), paint);
             }
         }
 
-        for (Enemy enemy : game.getEnemies())
-        {
-            if (enemy.isAlive())
-            {
-                canvas.drawBitmap(game.getEnemyBitmap(), enemy.getEnX(), enemy.getEnY(), paint);
+        for (Enemy enemy : game.getEnemies()) {
+            if (enemy.isAlive()) {
+                canvas.drawBitmap(game.getEnemyBitmap(), enemy.getEnx(), enemy.getEny(), paint);
             }
         }
 
-        if(game.getGameOver())
-        {
+        if(game.getGameOver()) {
             game.newGame();
         }
 
