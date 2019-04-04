@@ -58,13 +58,14 @@ public class MainActivity extends AppCompatActivity {
 
         game.newGame();
 
+        /*SharedPreferences try, I've tested many ways, but couldn't get to work.
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPref.edit();
 
         checkSaved();
 
         editor.putInt("high_score", game.getHighscore());
-        editor.apply();
+        editor.apply(); */
 
         pacTimer.schedule(new TimerTask() {
             @Override
@@ -227,67 +228,59 @@ public class MainActivity extends AppCompatActivity {
             for (Enemy enemy : game.getEnemies()) {
                 switch (enemy.getDir()) {
                     case 0:
-                        if (game.isRunning()) {
-                            if (enemy.getEnY() + enemySpeed > 0) {
-                                enemy.setEnY(enemy.getEnY() - enemySpeed);
-                                game.doCollisionCheck();
-                                gameView.invalidate();
-                            }
+                        if (enemy.getEnY() + enemySpeed > 1 && game.isRunning()) {
+                            enemy.setEnY(enemy.getEnY() - enemySpeed);
+                            game.doCollisionCheck();
+                            gameView.invalidate();
                         }
                         break;
                     case 1:
-                        if (game.isRunning()) {
-                            if (enemy.getEnX() + enemySpeed > 0) {
-                                enemy.setEnX(enemy.getEnX() - enemySpeed);
-                                game.doCollisionCheck();
-                                gameView.invalidate();
-                            }
+                        if (enemy.getEnX() + enemySpeed > 1 && game.isRunning()) {
+                            enemy.setEnX(enemy.getEnX() - enemySpeed);
+                            game.doCollisionCheck();
+                            gameView.invalidate();
                         }
                         break;
                     case 2:
-                        if (game.isRunning()) {
-                            if (enemy.getEnY() - enemySpeed + game.getEnemyBitmap().getWidth() < gameView.w) {
-                                enemy.setEnY(enemy.getEnY() + enemySpeed);
-                                game.doCollisionCheck();
-                                gameView.invalidate();
-                            }
+                        if (enemy.getEnY() + enemySpeed + game.getEnemyBitmap().getHeight() <= gameView.h  && game.isRunning()) {
+                            enemy.setEnY(enemy.getEnY() + enemySpeed);
+                            game.doCollisionCheck();
+                            gameView.invalidate();
                         }
                         break;
                     case 3:
-                        if (game.isRunning()) {
-                            if (enemy.getEnX() - enemySpeed + game.getEnemyBitmap().getWidth() < gameView.w) {
-                                enemy.setEnX(enemy.getEnX() + enemySpeed);
-                                game.doCollisionCheck();
-                                gameView.invalidate();
-                            }
+                        if (enemy.getEnX() + enemySpeed + game.getEnemyBitmap().getWidth() <= gameView.w && game.isRunning()) {
+                            enemy.setEnX(enemy.getEnX() + enemySpeed);
+                            game.doCollisionCheck();
+                            gameView.invalidate();
                         }
                         break;
                 }
             }
                 switch (game.getCurDir()) {
                     case 0:
-                        if (game.getPacy() + speed > 0 && game.isRunning()) {
+                        if (game.getPacy() + speed > 1 && game.isRunning()) {
                             game.setPacy(game.getPacy() - speed);
                             game.doCollisionCheck();
                             gameView.invalidate();
                         }
                         break;
                     case 1:
-                        if (game.getPacx() + speed > 0 && game.isRunning()) {
+                        if (game.getPacx() + speed > 1 && game.isRunning()) {
                             game.setPacx(game.getPacx() - speed);
                             game.doCollisionCheck();
                             gameView.invalidate();
                         }
                         break;
                     case 2:
-                        if (game.getPacy() + speed + game.getPacBitmap().getHeight() < gameView.h && game.isRunning()) {
+                        if (game.getPacy() + speed + game.getPacBitmap().getHeight() <= gameView.h && game.isRunning()) {
                             game.setPacy(game.getPacy() + speed);
                             game.doCollisionCheck();
                             gameView.invalidate();
                         }
                         break;
                     case 3:
-                        if (game.getPacx() + speed + game.getPacBitmap().getWidth() < gameView.w && game.isRunning()) {
+                        if (game.getPacx() + speed + game.getPacBitmap().getWidth() <= gameView.w && game.isRunning()) {
                             game.setPacx(game.getPacx() + speed);
                             game.doCollisionCheck();
                             gameView.invalidate();

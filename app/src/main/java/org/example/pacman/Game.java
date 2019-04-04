@@ -46,6 +46,11 @@ public class Game {
     private GameView gameView; //a reference to the gameview
     private int h,w; //height and width of screen
 
+    public void setSize(int h, int w) {
+        this.h = h;
+        this.w = w;
+    }
+
     private Random random = new Random();
 
     private int amountCoins;
@@ -77,8 +82,7 @@ public class Game {
     //TODO initialize goldcoins also here
     public void newGame() {
         pacx = 500;
-        pacy = 400; //just some starting coordinates
-        //reset the points
+        pacy = 400;
         points = 0;
         time = 0;
 
@@ -120,11 +124,6 @@ public class Game {
                 random.nextInt(gameView.w - enemyBitmap.getWidth()),
                 random.nextInt(gameView.h - enemyBitmap.getHeight())));
         }
-    }
-
-    public void setSize(int h, int w) {
-        this.h = h;
-        this.w = w;
     }
 
     public void movePacmanRight()
@@ -182,26 +181,22 @@ public class Game {
                 random.nextInt(gameView.h - enemyBitmap.getHeight()));
 
         if (points == 100) {
-            points = 25 + points;
+            points += 25;
             enemies.add(addNewEne);
-            pointsView.setText(context.getText(R.string.points) +" "+ points);
         } else if (points == 225) {
-            points = 25 + points;
+            points += 25;
             enemies.add(addNewEne);
-            pointsView.setText(context.getText(R.string.points) +" "+ points);
         } else if (points == 350) {
-            points = 25 + points;
+            points += 25;
             enemies.add(addNewEne);
-            pointsView.setText(context.getText(R.string.points) +" "+ points);
         } else if (points == 475) {
-            points = 25 + points;
+            points += 25;
             enemies.add(addNewEne);
-            pointsView.setText(context.getText(R.string.points) +" "+ points);
         } else if (points == 600) {
-            points = 25 + points;
+            points += 25;
             enemies.add(addNewEne);
-            pointsView.setText(context.getText(R.string.points) +" "+ points);
         }
+        pointsView.setText(context.getText(R.string.points) +" "+ points);
     }
 
     public void GameOver(boolean gameOver) {
